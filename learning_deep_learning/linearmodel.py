@@ -53,13 +53,16 @@ class SimpleLinearModel:
     def update_model(self, gradient, rate=0.01):
         self.W -= gradient*rate
 
-    def train(self, X, y, n=1):
-        for _ in range(n):
+    def train(self, X, y, n=1, rate=0.5):
+         for counter in range(n):
             gradient = self.get_gradient(X, y)
-            self.update_model(gradient, 0.5)
-            print(asdict(self))
+            self.update_model(gradient, rate)
+            if counter % 1000 == 0:
+                print(gradient)
+                print(self)
+                print(mse(self.predict(X), y))
 
     def generate_data(self, n, epsilon=1):
-        X = np.random.rand(self.W.shape[1], n)
+        X = np.random.rand(self.W.shape[1], n)-0.5
         y = self.predict(X)+(np.random.rand(1, n)-0.5)*epsilon
         return X, y
