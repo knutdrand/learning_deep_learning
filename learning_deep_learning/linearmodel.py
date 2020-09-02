@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 import numpy as np
 
 
@@ -57,7 +57,7 @@ class SimpleLinearModel:
         for _ in range(n):
             gradient = self.get_gradient(X, y)
             self.update_model(gradient, 0.5)
-            print(self.W)
+            print(asdict(self))
 
     def generate_data(self, n, epsilon=1):
         X = np.random.rand(self.W.shape[1], n)

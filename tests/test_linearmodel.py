@@ -1,15 +1,7 @@
 import pytest
 import numpy as np
 from learning_deep_learning.linearmodel import SimpleLinearModel
-
-@pytest.fixture
-def W():
-    return np.array([[4., 5., 6.]])
-
-@pytest.fixture
-def true_W():
-    return np.array([[10., 7., 19.]])
-
+from .util import *
 
 def test_predict_simple_linear(W):
     x = np.array([[10, 20, 30]]).T
