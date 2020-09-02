@@ -1,6 +1,7 @@
 from dataclasses import dataclass, asdict
 import numpy as np
 
+from .loss import Loss, mse
 
 """
 x = [1,4
@@ -28,10 +29,6 @@ dw=2e*z
 d(Wx)/dW = [d([x^TW^T]^T)/dW] = x^TT
 """
 
-def mse(a, b):
-    return np.mean((a-b)**2)
-
-
 @dataclass
 class SimpleLinearModel:
     W: np.array
@@ -46,7 +43,6 @@ class SimpleLinearModel:
         dl/dW = 2(Wx-y)*x^T
         """
         predicted = self.predict(x)
-        loss = mse(predicted, y)
         d_loss_on_W = 2*np.mean((predicted-y)*x, axis=1)
         return d_loss_on_W[None, :]
 
@@ -54,15 +50,49 @@ class SimpleLinearModel:
         self.W -= gradient*rate
 
     def train(self, X, y, n=1, rate=0.5):
-         for counter in range(n):
+        for counter in range(n):
             gradient = self.get_gradient(X, y)
             self.update_model(gradient, rate)
             if counter % 1000 == 0:
                 print(gradient)
                 print(self)
-                print(mse(self.predict(X), y))
+                print
 
     def generate_data(self, n, epsilon=1):
         X = np.random.rand(self.W.shape[1], n)-0.5
         y = self.predict(X)+(np.random.rand(1, n)-0.5)*epsilon
         return X, y
+
+
+
+@dataclass
+class LinearModel(SimpleLinearModel):
+    loss: Loss=mse
+
+    def get_gradient(self, x, y):
+        """
+        ((w_1x-y_1)**2+(w_2x-y_2)**2)/2
+        dL/dw_1 = 2*e_1*x
+        dL/dw_2 = 2*e_2*x
+        """
+
+        """
+        l = loss(Wx-y)
+        dl/dW = dl/de*de/dW
+              = 2e*W
+    
+        l = sum[(Wx-y)^2]/n
+        dl/dW = 2(Wx-y)*x^T
+        """
+        predicted = self.predict(x)
+        d_loss_on_e = self.loss.backward(predicted, y)
+        return np.mean(x.T[None, :, :]*d_loss_on_e[:, :, None], axis=1)
+
+    def train(self, X, y, n=1, rate=0.5):
+        for counter in range(n):
+            gradient = self.get_gradient(X, y)
+            self.update_model(gradient, rate)
+            if counter % 1000 == 0:
+                print(gradient)
+                print(self)
+                print(np.mean(self.loss.forward(self.predict(X), y)))

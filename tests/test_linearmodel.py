@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from learning_deep_learning.linearmodel import SimpleLinearModel
+from learning_deep_learning.linearmodel import SimpleLinearModel, LinearModel
 from .util import *
 
 def test_predict_simple_linear(W):
@@ -37,11 +37,18 @@ def test_train(W, true_W):
     model.train(X, y, 1000)
     assert np.allclose(model.W, true_W)
 
-def _test_predict_linear():
+def test_predict_linear():
     W = np.array([[1, 2, 3], [4, 5, 6]])
     x = np.array([[10, 20, 30]]).T
     res = LinearModel(W).predict(x)
     wanted = np.array([[10+40+90, 
                         40+100+180]]).T
     assert np.array_equal(res, wanted)
+
         
+def test_train():
+    true_W = np.array([[1, 2, 3], [4, 5, 6]], dtype="float")
+    X, y = LinearModel(true_W).generate_data(10000, 0.001)
+    model = LinearModel(np.array([[10, 5, 2], [-3, 13, 1]], dtype="float"))
+    model.train(X, y, 10000)
+    assert np.allclose(model.W, true_W)
