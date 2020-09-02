@@ -44,11 +44,10 @@ def test_predict_linear():
     wanted = np.array([[10+40+90, 
                         40+100+180]]).T
     assert np.array_equal(res, wanted)
-
         
-def test_train():
-    true_W = np.array([[1, 2, 3], [4, 5, 6]], dtype="float")
-    X, y = LinearModel(true_W).generate_data(10000, 0.001)
-    model = LinearModel(np.array([[10, 5, 2], [-3, 13, 1]], dtype="float"))
-    model.train(X, y, 10000)
-    assert np.allclose(model.W, true_W)
+def test_train(W2, true_W2):
+    print(true_W2)
+    X, y = LinearModel(true_W2).generate_data(10000, 0)
+    model = LinearModel(W2)
+    model.train(X, y, 10000, 1)
+    assert np.allclose(model.W, true_W2)

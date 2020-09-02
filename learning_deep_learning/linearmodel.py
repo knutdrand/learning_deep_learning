@@ -59,6 +59,7 @@ class SimpleLinearModel:
                 print
 
     def generate_data(self, n, epsilon=1):
+        np.random.seed(42)
         X = np.random.rand(self.W.shape[1], n)-0.5
         y = self.predict(X)+(np.random.rand(1, n)-0.5)*epsilon
         return X, y
@@ -67,7 +68,7 @@ class SimpleLinearModel:
 
 @dataclass
 class LinearModel(SimpleLinearModel):
-    loss: Loss=mse
+    loss = mse
 
     def get_gradient(self, x, y):
         """
@@ -92,7 +93,7 @@ class LinearModel(SimpleLinearModel):
         for counter in range(n):
             gradient = self.get_gradient(X, y)
             self.update_model(gradient, rate)
-            if counter % 1000 == 0:
+            if counter % 2 == 0:
                 print(gradient)
                 print(self)
                 print(np.mean(self.loss.forward(self.predict(X), y)))

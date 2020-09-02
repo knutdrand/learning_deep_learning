@@ -1,11 +1,11 @@
 import numpy as np
 from dataclasses import dataclass, asdict
 
-from .linearmodel import SimpleLinearModel, mse
+from .linearmodel import SimpleLinearModel, LinearModel
 
 
 @dataclass
-class AffineModel(SimpleLinearModel):
+class SimpleAffineModel(SimpleLinearModel):
     W: np.array
     B: np.array
     
@@ -23,6 +23,26 @@ class AffineModel(SimpleLinearModel):
         d_loss_on_B = 2*np.mean(error)
         return {"W": d_loss_on_W[None, :], "B": d_loss_on_B}
     
+    def update_model(self, gradient, rate=0.01):
+        for k, v in gradient.items():
+            tmp = getattr(self, k)
+            tmp -= gradient[k]*rate
+
+
+@dataclass
+class AffineModel(LinearModel):
+    B: np.array
+
+    def predict(self, x):
+        return self.W.dot(x)+self.B
+
+    def get_gradient(self, x, y):
+        predicted = self.predict(x)
+        d_loss_on_e = self.loss.backward(predicted, y)
+        dW = np.mean(x.T[None, :, :]*d_loss_on_e[:, :, None], axis=1)
+        dB = np.mean(d_loss_on_e, axis=1, keepdims=True)
+        return {"W": dW, "B": dB}
+        
     def update_model(self, gradient, rate=0.01):
         for k, v in gradient.items():
             tmp = getattr(self, k)

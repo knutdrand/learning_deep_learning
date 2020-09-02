@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import numpy as np
 from scipy.special import expit
 
-from .affinemodel import AffineModel
+from .affinemodel import SimpleAffineModel
 from .activation import *
 
 # dexpit = lambda x: np.exp(x)/(1+np.exp(x))**2
@@ -11,7 +11,7 @@ from .activation import *
 # drelu = lambda x: np.where(x>0, 1, 0)
 
 @dataclass
-class AlinearModel(AffineModel):
+class AlinearModel(SimpleAffineModel):
     W: np.array
     B: np.array
     activation: Activation=relu
