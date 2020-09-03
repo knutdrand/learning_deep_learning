@@ -1,5 +1,8 @@
 import numpy as np
 from collections import namedtuple
+
+# from .mapping import Mapping
+
 """
 Jacobian = out X in
 Jacobian samples = out X in X samples

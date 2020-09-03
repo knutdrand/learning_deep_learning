@@ -12,7 +12,7 @@ from .activation import *
 
 @dataclass
 class SimpleAlinearModel(SimpleAffineModel):
-    activation: Activation=relu
+    activation: Activation=Relu
     def predict(self, x):
         p = super().predict(x)
         return self.activation.forward(p)
@@ -27,16 +27,15 @@ class SimpleAlinearModel(SimpleAffineModel):
         predicted = self.predict(x)
         error = predicted-y
         # Error = samples
-        z = super().predict(x)
-        f = 2*error.T[..., None] @ self.activation.backward(z)
-        print(z.shape, error.shape, self.activation.backward(z).shape, f.shape)
+        J = self.activation.backward(super().predict(x))
+        f = 2*error.T[..., None] @ J
         return {"W": np.mean(f*x.T[..., None], axis=0).T,
                 "B": np.mean(f, axis=0)}
 
 
 @dataclass
 class AlinearModel(AffineModel):
-    activation: Activation=softmax
+    activation: Activation=Softmax
 
     def predict(self, x):
         p = super().predict(x)
