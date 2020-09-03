@@ -1,7 +1,7 @@
 from dataclasses import dataclass, asdict
 import numpy as np
 
-from .loss import Loss, mse
+from .loss import Loss, MSE
 
 """
 x = [1,4
@@ -68,7 +68,7 @@ class SimpleLinearModel:
 
 @dataclass
 class LinearModel(SimpleLinearModel):
-    loss = mse
+    loss = MSE
 
     def get_gradient(self, x, y):
         """
@@ -86,12 +86,12 @@ class LinearModel(SimpleLinearModel):
         dl/dW = 2(Wx-y)*x^T
         """
         predicted = self.predict(x)
-        d_loss_on_e = self.loss.backward(predicted, y)
+        d_loss_on_e = self.loss(y).backward(predicted)
         # X.T=samplesXin  J=samplesXoutXin
         return np.mean(x.T[:, :, None]*d_loss_on_e, axis=0).T
 
     def get_mean_loss(self, X, y):
-        return np.mean(self.loss.forward(self.predict(X), y))
+        return np.mean(self.loss(y).forward(self.predict(X)))
 
     def train(self, X, y, n=1, rate=0.5):
         for counter in range(n):

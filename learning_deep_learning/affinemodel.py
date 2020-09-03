@@ -39,7 +39,7 @@ class AffineModel(LinearModel):
 
     def get_gradient(self, x, y):
         predicted = self.predict(x)
-        d_loss_on_e = self.loss.backward(predicted, y)
+        d_loss_on_e = self.loss(y).backward(predicted)
         dW = np.mean(x.T[:, :, None]*d_loss_on_e, axis=0).T
         # J=samplesXoutXin  B=inX1
         dB = np.mean(d_loss_on_e, axis=0, keepdims=False).T

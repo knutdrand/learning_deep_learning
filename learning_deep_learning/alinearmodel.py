@@ -52,7 +52,7 @@ class AlinearModel(AffineModel):
         dl/dW = 2(e)*dexpit(z)*x^T
         """
         predicted = self.predict(x)
-        d_loss_on_e = self.loss.backward(predicted, y)
+        d_loss_on_e = self.loss(y).backward(predicted)
         d_e_on_z = self.activation.backward(super().predict(x))
         f = d_loss_on_e @ d_e_on_z
         # f = samples, out, in
