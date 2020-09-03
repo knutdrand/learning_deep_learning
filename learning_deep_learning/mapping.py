@@ -17,13 +17,21 @@ class Mapping:
         """
         raise NotImplemented
 
-
+@dataclass
 class AffineMapping:
     W: np.array
     B: np.array
 
-    def forward(X):
-        return self.W.dot(x)+self.B
+    def forward(self, x):
+        return self.W @ x + self.B
 
-    def backward(X):
+    def backward(self, X):
         return W.T[None, ...]  # should maybe be copied
+
+    def get_gradient(self, x, J):
+        return {"W": np.mean(J*x.T[..., None], axis=0).T,
+                "B": np.mean(J, axis=0).T}
+
+    def update(self, gradients, rate=0.01):
+        self.W -= gradients["W"]
+        self.B -= gradients["B"]

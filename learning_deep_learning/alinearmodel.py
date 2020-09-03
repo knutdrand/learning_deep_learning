@@ -59,3 +59,30 @@ class AlinearModel(AffineModel):
         # x = n,samples
         return {"W": np.mean(f*x.T[..., None], axis=0).T,
                 "B": np.mean(f, axis=0).T}
+
+class CompositeAlinearModel:
+    activation: Activation=Softmax
+    affine_model: AffineModel
+
+    def predict(self, x):
+        p = super().predict(x)
+        return self.activation.forward(p)
+    
+    def get_gradient(self, x, y):
+        """
+        mse(softmax(Wx+B), y)
+        dL/dW = dL/de*de/dz*dz/dW
+              = 1Xm * mXm * mXWs
+        z = Wx+B
+        e = expit(z)-y
+        l = sum[e^2]/n
+        dl/dW = 2(e)*dexpit(z)*x^T
+        """
+        predicted = self.predict(x)
+        d_loss_on_e = self.loss(y).backward(predicted)
+        d_e_on_z = self.activation.backward(super().predict(x))
+        f = d_loss_on_e @ d_e_on_z
+        # f = samples, out, in
+        # x = n,samples
+        return {"W": np.mean(f*x.T[..., None], axis=0).T,
+                "B": np.mean(f, axis=0).T}
