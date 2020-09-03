@@ -87,7 +87,8 @@ class LinearModel(SimpleLinearModel):
         """
         predicted = self.predict(x)
         d_loss_on_e = self.loss.backward(predicted, y)
-        return np.mean(x.T[None, :, :]*d_loss_on_e[:, :, None], axis=1)
+        # X.T=samplesXin  J=samplesXoutXin
+        return np.mean(x.T[:, :, None]*d_loss_on_e, axis=0).T
 
     def train(self, X, y, n=1, rate=0.5):
         for counter in range(n):

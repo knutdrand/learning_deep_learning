@@ -9,5 +9,5 @@ Loss = namedtuple("Loss", ["forward", "backward"])
 
 #Axes: outdim=1 X samples
 mse = Loss(lambda p, y: np.mean((p-y)**2, axis=0, keepdims=True),
-           lambda p, y: 2*(p-y)/y.shape[0])
-#Axes: outdim X samples
+           lambda p, y: 2*(p-y).T[:, None, :]/y.shape[0])
+#Axes: samples x out x in 

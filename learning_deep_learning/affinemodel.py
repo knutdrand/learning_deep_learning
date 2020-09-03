@@ -39,11 +39,13 @@ class AffineModel(LinearModel):
     def get_gradient(self, x, y):
         predicted = self.predict(x)
         d_loss_on_e = self.loss.backward(predicted, y)
-        dW = np.mean(x.T[None, :, :]*d_loss_on_e[:, :, None], axis=1)
-        dB = np.mean(d_loss_on_e, axis=1, keepdims=True)
+        dW = np.mean(x.T[:, :, None]*d_loss_on_e, axis=0).T
+        # J=samplesXoutXin  B=inX1
+        dB = np.mean(d_loss_on_e, axis=0, keepdims=False).T
         return {"W": dW, "B": dB}
         
     def update_model(self, gradient, rate=0.01):
         for k, v in gradient.items():
             tmp = getattr(self, k)
+            assert tmp.shape==gradient[k].shape, (k, tmp, gradient[k])
             tmp -= gradient[k]*rate
