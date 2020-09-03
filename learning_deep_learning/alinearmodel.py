@@ -26,10 +26,12 @@ class SimpleAlinearModel(SimpleAffineModel):
         """
         predicted = self.predict(x)
         error = predicted-y
+        # Error = samples
         z = super().predict(x)
-        f = 2*error*self.activation.backward(z)
-        return {"W": np.mean(f*x, axis=1)[None, :],
-                "B": np.mean(f)}
+        f = 2*error.T[..., None] @ self.activation.backward(z)
+        print(z.shape, error.shape, self.activation.backward(z).shape, f.shape)
+        return {"W": np.mean(f*x.T[..., None], axis=0).T,
+                "B": np.mean(f, axis=0)}
 
 
 @dataclass
@@ -42,6 +44,9 @@ class AlinearModel(AffineModel):
     
     def get_gradient(self, x, y):
         """
+        mse(softmax(Wx+B), y)
+        dL/dW = dL/de*de/dz*dz/dW
+              = 1Xm * mXm * mXWs
         z = Wx+B
         e = expit(z)-y
         l = sum[e^2]/n

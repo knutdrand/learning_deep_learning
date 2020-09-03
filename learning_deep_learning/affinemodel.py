@@ -20,12 +20,13 @@ class SimpleAffineModel(SimpleLinearModel):
         predicted = self.predict(x)
         error = predicted-y
         d_loss_on_W = 2*np.mean(error*x, axis=1)
-        d_loss_on_B = 2*np.mean(error)
+        d_loss_on_B = 2*np.mean(error, keepdims=True)
         return {"W": d_loss_on_W[None, :], "B": d_loss_on_B}
     
     def update_model(self, gradient, rate=0.01):
         for k, v in gradient.items():
             tmp = getattr(self, k)
+            assert tmp.shape==gradient[k].shape, (k, tmp, gradient[k])
             tmp -= gradient[k]*rate
 
 
