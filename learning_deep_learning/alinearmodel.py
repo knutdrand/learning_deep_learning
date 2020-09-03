@@ -54,6 +54,9 @@ class AlinearModel(AffineModel):
         """
         predicted = self.predict(x)
         d_loss_on_e = self.loss.backward(predicted, y)
-        f = self.activation.backward(super().predict(x))
-        return {"W": np.mean(f*x, axis=1)[None, :],
-                "B": np.mean(f)}
+        d_e_on_z = self.activation.backward(super().predict(x))
+        f = d_loss_on_e @ d_e_on_z
+        # f = samples, out, in
+        # x = n,samples
+        return {"W": np.mean(f*x.T[..., None], axis=0).T,
+                "B": np.mean(f, axis=0).T}

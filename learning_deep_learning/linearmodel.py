@@ -90,11 +90,14 @@ class LinearModel(SimpleLinearModel):
         # X.T=samplesXin  J=samplesXoutXin
         return np.mean(x.T[:, :, None]*d_loss_on_e, axis=0).T
 
+    def get_mean_loss(self, X, y):
+        return np.mean(self.loss.forward(self.predict(X), y))
+
     def train(self, X, y, n=1, rate=0.5):
         for counter in range(n):
             gradient = self.get_gradient(X, y)
             self.update_model(gradient, rate)
-            if counter % 2 == 0:
+            if counter % 500 == 0:
                 print(gradient)
                 print(self)
-                print(np.mean(self.loss.forward(self.predict(X), y)))
+                print(self.get_mean_loss(X, y))

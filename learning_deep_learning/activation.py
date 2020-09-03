@@ -15,4 +15,6 @@ logistic = Activation(expit,
 # Jacobian == samples X out X in 
 _softmax = lambda x: np.exp(x)/np.sum(np.exp(x), axis=0, keepdims=True)
 softmax = Activation(_softmax,
-                     lambda x: np.mul.outer(_softmax(x), np.identity(x.size)-_softmax(x)))
+                     lambda x: _softmax(x).T[..., None]*(np.identity(x.shape[0])[None, ...]-_softmax(x).T[:,None,:]))
+
+#np.mul.outer(_softmax(x), np.identity(x.size)-_softmax(x)))
