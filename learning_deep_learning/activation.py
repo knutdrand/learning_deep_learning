@@ -12,6 +12,6 @@ logistic = Activation(expit,
                       lambda x: expit(x)*expit(-x))
 
 
-_softmax = lambda x: np.exp(x)/np.sum(np.exp(x), axis),
+_softmax = lambda x: np.exp(x)/np.sum(np.exp(x), axis=0, keepdims=True)
 softmax = Activation(_softmax,
                      lambda x: np.mul.outer(_softmax(x), np.identity(x.size)-_softmax(x)))
