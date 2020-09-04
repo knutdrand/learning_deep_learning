@@ -26,12 +26,12 @@ class AffineMapping:
         return self.W @ x + self.B
 
     def backward(self, X):
-        return W.T[None, ...]  # should maybe be copied
+        return self.W[None, ...]  # should maybe be copied
 
     def get_gradient(self, x, J):
         return {"W": np.mean(J*x.T[..., None], axis=0).T,
                 "B": np.mean(J, axis=0).T}
 
     def update(self, gradients, rate=0.01):
-        self.W -= gradients["W"]
-        self.B -= gradients["B"]
+        self.W -= gradients["W"]*rate
+        self.B -= gradients["B"]*rate
