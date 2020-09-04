@@ -4,6 +4,7 @@ from learning_deep_learning.model import CompositeAlinearModel, DoubleModel, Lin
 from learning_deep_learning.optimizer import Optimizer
 from learning_deep_learning.mapping import AffineMapping
 from learning_deep_learning.compositemapping import LinearCompositeMapping
+from learning_deep_learning.activation import Relu, Softmax
 from .util import *
 
 @pytest.fixture
@@ -51,12 +52,12 @@ def test_train_double(affine, true_affine, affine2, true_affine2):
     assert np.allclose(model.predict(X), y)
 
 def test_train_linear(affine, true_affine, affine2, true_affine2):
-    true_model = LinearCompModel(LinearCompositeMapping([true_affine, true_affine2]))
-    true_model = LinearCompModel(LinearCompositeMapping([affine, affine2]))
+    true_model = LinearCompModel(LinearCompositeMapping([true_affine, Relu, true_affine2, Softmax]))
+    true_model = LinearCompModel(LinearCompositeMapping([affine, Relu, affine2, Softmax]))
     X, y = true_model.generate_data(1000, 0)
     assert true_model.get_mean_loss(X, y) == 0
     model = DoubleModel(affine, affine2)
-    Optimizer(model).train(X, y, 10000, 0.003)
+    Optimizer(model).train(X, y, 100000, 0.003)
     assert np.allclose(model.predict(X), y)
 
     # assert np.allclose(model.W, true_W2)
