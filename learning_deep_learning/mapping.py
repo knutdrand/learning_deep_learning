@@ -17,6 +17,12 @@ class Mapping:
         """
         raise NotImplemented
 
+    def update(*args, **kwargs):
+        pass
+    
+    def get_gradient(*args, **kwargs):
+        return None
+
 @dataclass
 class AffineMapping:
     W: np.array
