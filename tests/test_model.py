@@ -32,7 +32,14 @@ def _test_train_train(affine, true_affine):
     # assert np.allclose(model.W, true_W2)
     # assert np.allclose(model.B, np.array([[0.05], [-0.05]]))
 
-def test_train_double(affine, true_affine, affine2, true_affine2):
+def test_gradient_double(affine, affine2):
+    model = DoubleMOdel(true_affine, true_affine2)
+    X, y = model.generate_data(1, 0)
+    true_y = y-0.5
+    gradient1, gradient2 = model.get_gradient(X, true_y)
+    assert gradient1["W"] == affine2.W*X[0]
+
+def _test_train_double(affine, true_affine, affine2, true_affine2):
     true_model = DoubleModel(true_affine, true_affine2) 
     X, y = true_model.generate_data(1000, 0)
     assert true_model.get_mean_loss(X, y) == 0
