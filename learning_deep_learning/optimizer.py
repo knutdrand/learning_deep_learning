@@ -35,7 +35,7 @@ class BBOptimizer(Optimizer):
             prev_gradient = gradient
             gradient = self.model.get_gradient(X, y)
             updated = self.update_gradients(prev_gradient, gradient, d)
-            if counter % 500 == 0:
+            if counter % 10 == 0:
                 print(gradient)
                 print(self.model)
                 print(self.model.get_mean_loss(X, y))

@@ -64,21 +64,38 @@ class Innerprod(Attention):
         queries = self.W_Q @ X
         return T(keys) @ queries
 
-    def get_gradient(self, X, J):
+    def dW_q(self, X, J):
         n, input_dim, L = X.shape
-        assert J.shape==(n, L, L), (J.shape,(n, L, L))
-        keys = T(self.W_K @ X)
-        assert keys.shape == (n, L, self.key_dim())
-        S = self.forward(X)
-        assert S.shape==(n, L, L), (S.shape, (n, L, L))
-        d_S_wq = (X[..., None, None]*keys[:, None, None, ...]).swapaxes(1, 3).swapaxes(-2, -1)# .swapaxes(1, 2)
-        assert d_S_wq.shape == (n, L, L, self.key_dim(), input_dim), (d_S_wk.shape, (n, L, L, self.key_dim(), input_dim))
+        keys = self.W_K @ X
+        assert keys.shape == (n, self.key_dim(), L)
+        # d_S_wq = (X[..., None, None]*keys[:, None, None, ...]).swapaxes(1, 3).swapaxes(-2, -1)
+        d_S_wq = np.einsum("...ai,...bj->...ijab", keys, X)
+        assert d_S_wq.shape == (n, L, L, self.key_dim(), input_dim), (d_S_wq.shape, (n, L, L, self.key_dim(), input_dim))
         # dS_tijkl,sample t influence of X_kl on S_ij
         # J_tab,sample t  influence of S_ab on L
         # dL_tcd=sample t influence of X_cd on L = sum_ij(dS_tijcd*J_tij)
-        dW_q = np.einsum("...ijcd,...ij", d_S_wq, J).mean(axis=0)
+
+        return np.einsum("...ijcd,...ij", d_S_wq, J).mean(axis=0)
+
+    def dW_k(self, X, J):
+        n, input_dim, L = X.shape
+        queries = self.W_K @ X
+        assert queries.shape == (n, self.key_dim(), L)
+        d_S_wk = np.einsum("...aj,...bi->...ijab", queries, X)
+        assert d_S_wk.shape == (n, L, L, self.key_dim(), input_dim), (d_S_wk.shape, (n, L, L, self.key_dim(), input_dim))
+        return np.einsum("...ijcd,...ij", d_S_wk, J).mean(axis=0)
+
+    def get_gradient(self, X, J):
+        n, input_dim, L = X.shape
+        assert J.shape==(n, L, L), (J.shape,(n, L, L))
+
+        S = self.forward(X)
+        assert S.shape==(n, L, L), (S.shape, (n, L, L))
+        dW_q = self.dW_q(X, J)
+        dW_q = self.dW_q(X, J)
         # print(dW_k)
-        return {"W_Q": dW_q}
+        return {"W_Q": self.dW_q(X, J),
+                "W_K": self.dW_k(X, J)}
 
     def input_dim(self):
         return self.W_K.shape[1]
@@ -87,7 +104,8 @@ class Innerprod(Attention):
         updates = {}
         for key, gradient in gradients.items():
             d = -gradients[key]*rate
-            getattr(self, key) += d
+            tmp = getattr(self, key)
+            tmp += d
             updates[key]=d
         return updates
 

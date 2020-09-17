@@ -38,7 +38,7 @@ def test_update_W_q_inner(innerprod):
     X, y = true_model.generate_data(n, L, 0)
     assert X.shape == (n, 3, 4)
     assert y.shape == (n, 4, 4)
-    BBOptimizer(model).train(X, y, 100, 0.005)
+    BBOptimizer(model).train(X, y, 200, 0.005)
     print(true_model)
     assert np.allclose(model.predict(X), y)
 
