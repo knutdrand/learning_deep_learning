@@ -91,9 +91,6 @@ class Innerprod(Attention):
 
         S = self.forward(X)
         assert S.shape==(n, L, L), (S.shape, (n, L, L))
-        dW_q = self.dW_q(X, J)
-        dW_q = self.dW_q(X, J)
-        # print(dW_k)
         return {"W_Q": self.dW_q(X, J),
                 "W_K": self.dW_k(X, J)}
 
