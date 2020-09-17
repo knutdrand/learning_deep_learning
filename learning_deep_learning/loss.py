@@ -25,6 +25,17 @@ class MSE(Loss):
 
     def backward(self, p):
         return 2*(p-self.y).T[:, None, :]/self.y.shape[0]      
+
+class GeneralMSE(Loss):
+    def forward(self, p):
+        axes = tuple(range(1, len(self.y.shape)))
+        return np.mean((p-self.y)**2, axis=axes, keepdims=True)
+
+    def backward(self, p):
+        """
+        output=(N, outputshape)
+        """
+        return 2*(p-self.y)/(self.y.size/self.y.shape[0])
     
     
 

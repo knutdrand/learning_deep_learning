@@ -1,7 +1,7 @@
 import numpy as np
 
 from learning_deep_learning.model import CompositeAlinearModel, DoubleModel, LinearCompModel
-from learning_deep_learning.optimizer import Optimizer
+from learning_deep_learning.optimizer import BBOptimizer, Optimizer
 from learning_deep_learning.mapping import AffineMapping
 from learning_deep_learning.compositemapping import LinearCompositeMapping
 from learning_deep_learning.activation import Relu, Softmax

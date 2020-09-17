@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 import numpy as np
 
-from .mapping import AffineMapping
+from .mapping import AffineMapping, Mapping
 from .compositemapping import LinearCompositeMapping
 from .activation import Softmax, Activation
-from .loss import Loss, MSE
+from .loss import Loss, MSE, GeneralMSE
 
 class Model:
     def get_mean_loss(self, X, y):
@@ -21,6 +21,33 @@ class Model:
             tmp = getattr(self, k)
             assert tmp.shape==gradients[k].shape, (k, tmp, gradient[k])
             tmp -= gradient[k]*rate
+
+@dataclass
+class SeqModel(Model):
+    mapping: Mapping
+    loss: Loss=GeneralMSE
+
+    def predict(self, x):
+        return self.mapping.forward(x)
+
+    def generate_data(self, n, L=10, epsilon=1):
+        np.random.seed(42)
+        X = np.random.rand(n, self.input_dim(), L)-0.5
+        y = self.predict(X)
+        noise = (np.random.rand(*(y.shape))-0.5)*epsilon
+        return X, y + noise
+
+    def input_dim(self):
+        return self.mapping.input_dim()
+
+    def get_gradient(self, x, y):
+        yhat = self.predict(x)
+        d_loss_on_e = self.loss(y).backward(yhat)
+        return self.mapping.get_gradient(x, d_loss_on_e)
+                
+    def update_model(self, gradients, rate=0.01):
+        return self.mapping.update(gradients, rate=rate)
+
 
 @dataclass
 class CompositeAlinearModel(Model):

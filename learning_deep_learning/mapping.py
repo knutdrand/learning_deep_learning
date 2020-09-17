@@ -35,6 +35,7 @@ class AffineMapping:
         return self.W[None, ...]  # should maybe be copied
 
     def get_gradient(self, x, J):
+
         return {"W": np.mean(J*x.T[..., None], axis=0).T,
                 "B": np.mean(J, axis=0).T}
 
