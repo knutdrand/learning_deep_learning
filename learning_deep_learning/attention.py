@@ -84,9 +84,12 @@ class Innerprod(Attention):
         return self.W_K.shape[1]
         
     def update(self, gradients, rate=0.01):
-        d = -gradients["W_Q"]*rate
-        self.W_Q += d
-        return {"W_Q": d}
+        updates = {}
+        for key, gradient in gradients.items():
+            d = -gradients[key]*rate
+            getattr(self, key) += d
+            updates[key]=d
+        return updates
 
 @dataclass
 class Scores(Mapping):
