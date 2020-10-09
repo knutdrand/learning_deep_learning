@@ -1,0 +1,53 @@
+\documentclass[20pt]{article}         %% What type of document you're writing.
+\usepackage{amsmath,amsfonts,amssymb,tensor,physics}   %% AMS mathematics macros
+\title{Tensor Calculus}
+\author{Knut Rand}
+%% \date{2 July 2004}           %% By default, LaTeX uses the current date
+
+%%%%% The Document
+
+\begin{document}
+\begin{align*}
+  K &= W_KX\\
+  k^i_j &= w^i_rx^r_j\\
+  q^i_j &= v^i_rx^r_j\\
+  \pdv{k^i_j}{w^a_b} &= \delta^{ia}_{rb}x^r_j\\
+  &= \delta^{ia}x^b_j\\
+  \pdv{q^i_j}{v^a_b} &= \delta^{ia}_{rb}x^r_j\\
+  &= \delta^{ia}x^b_j\\
+\end{align*}
+
+\begin{align*}
+  S &= K^TQ\\
+  s^i_j &= k^r_iq^r_j\\
+  \pdv{s^i_j}{q^a_b} &= k^r_i\delta^{ra}_{jb}\\
+  &= k^a_i\delta_{jb}\\
+  &\\
+  \pdv{s^i_j}{v^a_b} &= \pdv{s^i_j}{q^c_d}\pdv{q^c_d}{v^a_b}\\
+  &= k^c_i\delta_{jd} \delta^{ca}x^b_d\\
+  &= k^a_ix^b_j\\
+\end{align*}
+\begin{align*}
+  K &= WX\\
+  k^c_d &= w^c_rx^r_d\\
+  \pdv{k^c_d}{w^a_b} &= \delta^{ca}_{rb}x^r_d = \delta^{ca}x^b_d\\
+  S &= K^TQ\\
+  s^i_j &= k^r_iq^r_j\\
+  \pdv{s^i_j}{k^a_b} &= q^r_j\delta^{ra}_{ib}\\
+  &= q^a_j\delta_{ib}\\
+  &\\
+  \pdv{s^i_j}{w^a_b} &= \pdv{s^i_j}{k^c_d}\pdv{k^c_d}{w^a_b}\\
+  &= q^c_j\delta_{id}\delta^{ca}x^b_d\\
+  &= q^a_jx^b_i\\
+\end{align*}
+
+\begin{align*}
+  Y &= f(S)\\
+  y^i_j &= s_{ij}/t_j\\
+  \pdv{y^i_j}{s^a_b} &= \delta^{kjb}d^{iak} = y^i_j(\delta^a_b-y^a_b)\delta_{jb}\\
+  \pdv{l}{s^a_b} &= \pdv{l}{y^i_j}\pdv{y^i_j}{s^a_b}\\
+  \pdv{l}{s^a_b} &= \Delta^i_j\delta^{jbk}d^{iak}\\
+  \pdv{l}{s^a_b} &= \sum_{i,j,k}\Delta^i_j\delta^{jbk}d^{iak}\\
+  \pdv{l}{s^a_b} &= \Delta^i_bd^{iab}\\
+\end{align*}
+\end{document}
