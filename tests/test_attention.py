@@ -42,6 +42,21 @@ def test_update_W_q_inner(innerprod):
     print(true_model)
     assert np.allclose(model.predict(X), y)
 
+def test_inner(innerprod):
+    n, L = (1000, 4)
+    true_innerprod = Innerprod(innerprod.W_K.copy(), innerprod.W_Q.copy(), innerprod.W_V)
+    true_innerprod.W_Q += 0.01*np.array([[1, -1, 10], [-10, 10, -1]])
+    true_innerprod.W_K += 0.03*np.array([[1, -1, 10], [-10, 10, -1]])
+    model = SeqModel(innerprod)
+    true_model = SeqModel(true_innerprod)
+    X, y = true_model.generate_data(n, L, 0)
+    assert X.shape == (n, 3, 4)
+    assert y.shape == (n, 4, 4)
+    BBOptimizer(model).train(X, y, 200, 0.005)
+    print(true_model)
+    assert np.allclose(model.predict(X), y)
+
+
 def test_scores():
     n, L = (1000, 4)
     true_model = SeqModel(Scores(np.arange(L*L, dtype="float").reshape((L, L))))

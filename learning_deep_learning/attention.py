@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 import numpy as np
-from .activation import Softmax
+from .activation import Softmax, SeqSoftmax
 from .mapping import Mapping
 
 def T(array):
@@ -53,6 +53,15 @@ class Attention(Mapping):
         pass
         
 
+class Weights(Innerprod):
+    def forward(self, X):
+        return SeqSoftmax.forward(super().forward(X))
+
+    def get_gradient(self, X, J):
+        S = super().forward(X)
+        nJ = Softmax.backward(S)
+        dWq = self.d_W_q(X, J)
+        
 
 class Innerprod(Attention):
 
@@ -105,6 +114,8 @@ class Innerprod(Attention):
             tmp += d
             updates[key]=d
         return updates
+
+
 
 @dataclass
 class Scores(Mapping):
